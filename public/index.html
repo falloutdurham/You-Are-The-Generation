@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+  <head>
+  <title>YOU ARE THE GENERATION THAT BOUGHT MORE SHOES AND YOU GET WHAT YOU DESERVE</title>
+   <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+ 
+  </head>
+ 
+  <body>
+    
+    <style>
+    
+      #audioStop {
+        position: absolute;
+        right: 1em;
+        top: 0.5em;
+        cursor: pointer;
+        
+      }
+    
+      body {
+        
+        
+           font-family: "Helvetica Neue", Helvetica, sans-serif;
+         
+        
+      }
+  
+      #container {
+        position: relative;
+         top: 5em;
+        left: 25%;
+        width: 50%;
+      }
+  
+      
+      #quote { 
+               color: white;
+                background-color: black;
+                position: relative;
+             
+               
+
+                font-size: 40pt;
+                  line-height: 0.9em;
+                   letter-spacing: -0.05em;
+               text-transform: uppercase;
+               ;}
+               
+      #attribution {
+        position: relative;
+        color: black;
+        background-color: white;
+        font-size: 20pt;
+        text-align: right;
+            letter-spacing: -0.09em;
+        
+      }
+      
+      #attribution::before {
+        content: '\2013';
+        padding-right: 0.2em;
+      }
+      
+    </style>
+    
+    <script>
+         $(document).ready(function(){
+           
+           $("#audioStop").bind('click', function(){
+             
+             var player = document.getElementById('audioPlayer');
+             
+             if (player.paused) {
+               $("#audioState").attr('src',"pause.png");
+               player.play();
+             } else {
+               $("#audioState").attr('src',"play.png");
+                player.pause();
+             }
+             
+           });
+           
+         });
+          
+      
+         $.getJSON('quote', function(data) {
+
+
+
+            $("#quote").text(data['quote']);
+            $("#attribution").text(data['attribution']);
+
+          });
+        
+        setInterval(function() {
+    
+          $.getJSON('quote', function(data) {
+
+            $("#quote").text(data['quote']);
+            $("#attribution").text(data['attribution']);
+
+          });
+          
+    
+        }, 30000);
+    
+    
+      
+    </script>
+    <div id="container">
+      <div id="quote">
+      
+      </div>
+      <div id="attribution"></div>
+    </div>
+
+    <audio id="audioPlayer" autoplay="autoplay" loop="loop">
+        <source src="01.m4a" type="audio/mp4">
+        <source src="01.ogg" type="audio/ogg">  
+      </audio>
+      
+    <div id="audioStop"><img id="audioState" src="pause.png"></div>    
+
+  </body>
+
+
+</html>
