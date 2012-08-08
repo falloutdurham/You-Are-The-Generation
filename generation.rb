@@ -25,7 +25,7 @@ end
 
 post '/add' do
   
-  if(params[:secret].match(/lauren/)) 
+  if(params[:secret].match(/SECRET/)) 
     stmt = "INSERT INTO quotes VALUES(null, ?,?)"
     
     db.execute(stmt, params[:quote], params[:who])
