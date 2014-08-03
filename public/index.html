@@ -2,7 +2,7 @@
 <html>
   <head>
   <title>YOU ARE THE GENERATION THAT BOUGHT MORE SHOES AND YOU GET WHAT YOU DESERVE</title>
-   <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+   <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
  
   </head>
  
@@ -10,103 +10,127 @@
     
     <style>
     
-      #audioStop {
-        position: absolute;
-        right: 1em;
-        top: 0.5em;
-        cursor: pointer;
-        
-      }
-    
-      body {
-        
-        
-           font-family: "Helvetica Neue", Helvetica, sans-serif;
-         
-        
-      }
-  
-      #container {
-        position: relative;
-         top: 5em;
-        left: 25%;
-        width: 50%;
-      }
-  
-      
-      #quote { 
-               color: white;
-                background-color: black;
-                position: relative;
-             
-               
+#audioStop {
+  position: absolute;
+  right: 1em;
+  top: 0.5em;
+  cursor: pointer;
+}
 
-                font-size: 40pt;
-                  line-height: 0.9em;
-                   letter-spacing: -0.05em;
-               text-transform: uppercase;
-               ;}
+body {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+}
+
+#container {
+  position: relative;
+  top: 8em;
+  left: 25%;
+  width: 50%;
+}
+      
+#quote { 
+  color: rgba(255,255,255,0.9);
+  background-color: rgba(0,0,0,0.4);
+  position: relative;
+  font-size: 40pt;
+  line-height: 0.9em;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
                
-      #attribution {
-        position: relative;
-        color: black;
-        background-color: white;
-        font-size: 20pt;
-        text-align: right;
-            letter-spacing: -0.09em;
-        
-      }
-      
-      #attribution::before {
-        content: '\2013';
-        padding-right: 0.2em;
-      }
-      
+#attribution {
+  position: relative;
+  color: rgba(0,0,0,0.9);
+  background-color: rgba(255,255,255,0.4);
+  font-size: 20pt;
+  text-align: right;
+  letter-spacing: -0.09em;
+}
+
+#attribution::before {
+  content: '\2013';
+  padding-right: 0.2em;
+}
+
+video { 
+  position: fixed; 
+  right: 0; 
+  bottom: 0;
+  min-width: 100%; 
+  min-height: 100%;
+  width: auto; 
+  height: auto; 
+}
+
+#video-layer-0 {
+  z-index: -99;
+}
+
+#video-layer-1 {
+  z-index: -100;
+  display: none;
+} 
     </style>
     
     <script>
-         $(document).ready(function(){
-           
-           $("#audioStop").bind('click', function(){
-             
-             var player = document.getElementById('audioPlayer');
-             
-             if (player.paused) {
-               $("#audioState").attr('src',"pause.png");
-               player.play();
-             } else {
-               $("#audioState").attr('src',"play.png");
-                player.pause();
-             }
-             
-           });
-           
-         });
-          
-      
-         $.getJSON('quote', function(data) {
 
+var baseURL = "http://s3.amazonaws.com/youarethegeneration/"    
+var MAX_SEGMENTS = 444;
 
+function getRandomVideoSegment() {
+  return Math.floor(Math.random() * (MAX_SEGMENTS - 1)) + 1;
+}
 
-            $("#quote").text(data['quote']);
-            $("#attribution").text(data['attribution']);
+function swap(first, second) {
+  $("#"+second).css('display', 'block');
+  $("#"+first).css('display', 'none');
+  document.getElementById(second).play();
+}
 
-          });
-        
-        setInterval(function() {
-    
-          $.getJSON('quote', function(data) {
+function replace(videoLayer) {
+  $("#"+videoLayer).attr('src', baseURL + getRandomVideoSegment() +'.mp4');
+}
 
-            $("#quote").text(data['quote']);
-            $("#attribution").text(data['attribution']);
+$(document).ready(function(){
 
-          });
-          
-    
-        }, 30000);
-    
-    
-      
+  replace('video-layer-0');
+  replace('video-layer-1');
+
+  $("#video-layer-0").on('ended', function(){ 
+    swap('video-layer-0', 'video-layer-1');
+    replace('video-layer-0');
+  });
+
+  $("#video-layer-1").on('ended', function(){ 
+    swap('video-layer-1', 'video-layer-0');
+    replace('video-layer-1');
+  });
+
+  $("#audioStop").on('click', function(){
+
+    var player = document.getElementById('audioPlayer');
+
+    if (player.paused) {
+      $("#audioState").attr('src',"pause.png");
+      player.play();
+    } else {
+      $("#audioState").attr('src',"play.png");
+      player.pause();
+    }
+  });
+});
+
+$.getJSON('quote', function(data) {
+  $("#quote").text(data['quote']);
+  $("#attribution").text(data['attribution']);
+});
+
+setInterval(function() {
+  $.getJSON('quote', function(data) {
+  $("#quote").text(data['quote']);
+  $("#attribution").text(data['attribution']);
+});}, 30000);
+   
     </script>
     <div id="container">
       <div id="quote">
@@ -114,6 +138,11 @@
       </div>
       <div id="attribution"></div>
     </div>
+
+    <video id="video-layer-0" src="http://s3.amazonaws.com/youarethegeneration/400.mp4" autoplay> </video>
+
+    
+    <video id="video-layer-1" src="http://s3.amazonaws.com/youarethegeneration/02.mp4" > </video>
 
     <audio id="audioPlayer" autoplay="autoplay" loop="loop">
         <source src="01.m4a" type="audio/mp4">
